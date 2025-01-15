@@ -41,19 +41,13 @@
         });
     
         $('.ctr-delete').click(el => {
-          if ($('.ctr-element').length === 1) {
-            alert('Min 1');
-          } else {
-            if (window.confirm('¿Seguro?')) {
-              const index = +$(el.currentTarget).attr('index');
-              if (data.combat.hasTurn === index) {
-                data.combat.hasTurn = 0;
-              }
-              data.combat.trackers.splice(index, 1);
-              renderTracker();
-              saveReloadTracker();
-            }
-          }
+	      const index = +$(el.currentTarget).attr('index');
+	      if (data.combat.hasTurn === index) {
+		data.combat.hasTurn = 0;
+	      }
+	      data.combat.trackers.splice(index, 1);
+	      renderTracker();
+	      saveReloadTracker();
         });
     
         $('.tracker-turn').click(el => {
