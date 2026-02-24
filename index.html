@@ -1,148 +1,546 @@
 <!DOCTYPE html>
-<html lang="es" style="margin-bottom: 30px; background-color: white;">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HTML 5 Boilerplate</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-  </head>
-  <body>
-	  <script>
-      $(document).ready(function() {
-    const buttonStyle = 'z-index: 99;background-color:rgb(61,135,245);padding:10px;color:white;border-radius:10px;border:none;cursor:pointer;';
-    const buttonClasses = 'button-text button button-flex clickable dark';
-    const data = init();
-    renderTracker();
-    clickEvents(); 
-  
-    setInterval(() => {
-      saveData();
-    }, 3000);
-  
-    function renderTracker() {
-      $(".ctr-list").empty();
-        data.combat.trackers.forEach((pj, i) => {
-          $(".ctr-list").append(
-            `<div class="ctr-element" style="white-space: nowrap; position: relative;">
-              <div class="ctr-fixed-space" style="display: inline-block; padding: 1px;position:sticky; left:0; background-color: white;">
-                <span style="cursor: pointer; padding-right: 10px;">&#9776;</span>
-                <input type="radio" class="tracker-turn" name="turn" value="${i}">
-                <input type="text" style="width:120px" class="ctr-name" title="${pj.name}" placeholder="Nombre" value="${pj.name}"/>
-              </div>
-              <input type="text" style="width: 80px;" class="ctr-iniciativa" placeholder="Iniciativa" title="Iniciativa" value="${pj.status.iniciativa}"/>
-              <input type="text" style="width: 80px;" class="ctr-vida" placeholder="Vida" title="Vida" value="${pj.status.vida}"/>
-              <input type="text" class="ctr-notes" placeholder="Notas" title="${pj.notes}" value="${pj.notes}"/>
-              <button style="${buttonStyle} padding: 8px; background-color: rgb(255,54,51); padding-top: 4px; padding-bottom: 4px; display: inline-block;" class="ctr-delete ${buttonClasses}" index="${i}">D</button>
-          </div>`
-          );
-        });
-    
-        $('.ctr-delete').click(el => {
-	      const index = +$(el.currentTarget).attr('index');
-	      if (data.combat.hasTurn === index) {
-		data.combat.hasTurn = 0;
-	      }
-	      data.combat.trackers.splice(index, 1);
-	      renderTracker();
-	      saveReloadTracker();
-        });
-    
-        $('.tracker-turn').click(el => {
-          data.combat.hasTurn = +$(el.currentTarget).val();
-        });
-    
-        $('input:radio[name=turn]').filter(`[value="${data.combat.hasTurn}"]`).click();
-      }
-      
-      function saveReloadTracker() {
-        saveData();
-        renderTracker();
-      }
-    
-      function newTracker() {
-        return JSON.parse(JSON.stringify({
-          name: '',
-          status: {
-              vida: '',
-              iniciativa: ''
-          },
-          notes: ''
-        }));
-      }
-    
-      function saveData() {
-        $(".ctr-element").each(function(tr) {
-            data.combat.trackers[tr] = {
-                name: findVal(this,".ctr-name",''),
-                status: {
-                    vida: findVal(this,".ctr-vida", ''),
-                    iniciativa: findVal(this,".ctr-iniciativa", '')
-                },
-                notes: findVal(this,".ctr-notes",'')
-            }
-        });
-        data.combat.turn = +$('#combat-turn').val() || 0;
-        data.notes = $('#cti-notes').val() || '';
-        localStorage.setItem('rpg-data', JSON.stringify(data));
-      }
-    
-      function clickEvents() {
-          
-          $('#combat-restart').click(() => {
-              data.combat.hasTurn = 0;
-              data.combat.turn = 0;
-              $('#combat-turn').val(0);
-              saveReloadTracker();
-          });
-          
-          $("#combat-next").click(() =>{
-              if(data.combat.hasTurn === data.combat.trackers.length-1) {
-              data.combat.hasTurn = 0;
-              data.combat.turn++;
-              $('#combat-turn').val(data.combat.turn);
-              renderTracker();
-              } else {
-              data.combat.hasTurn++;
-              renderTracker();
-              }
-          });
-      
-          $('#ctb-new').click(() => {
-              data.combat.trackers.push(newTracker());
-              saveReloadTracker();
-          });
-      }
-    
-      function findVal(ctx, str, def) {
-          return $(ctx).find(str).val() || def;
-      }
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combat Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      function init() {
-          let loadedData;
-          try {
-            loadedData = JSON.parse(localStorage.getItem('rpg-data'));
-          } catch (err) {
-            console.warn('RPG TRACKER NEW')
-          }
-        
-          const data = loadedData || {
-            combat: {
-              turn: 0,
-              hasTurn: 0,
-              trackers: [newTracker(), newTracker(), newTracker()]
-            },
-            notes: ''
-          };
-          $('body').append(
-            `<div id="ctp-combat" style="position: relative; max-width: 725px; min-width: 280px; width: -webkit-fill-available; width: -moz-fill-available;"><button class="${buttonClasses}" style="${buttonStyle} padding-top: 7px; padding-bottom: 7px; margin-right:20px; background-color: rgb(44,171,33); display: inline-block;" id="ctb-new">+</button><div style="position: absolute; right: 20px; top: 7px;"><button id="combat-restart" style="${buttonStyle} margin-right: 10px;  padding-top: 7px; padding-bottom: 7px; display: inline-block; background-color: rgb(255,54,51);" class="${buttonClasses}">Reset</button><span style="color: #000000bd;">Turn: <input type="number" style="width: 50px;" id="combat-turn" value="${data.combat.turn}" placeholder="Turno"></span><button id="combat-next" style="${buttonStyle} margin-left: 10px; padding-top: 7px; padding-bottom: 7px; display: inline-block;" class="${buttonClasses}">Siguiente</button></div><div style="color: #000000bd; margin-top: 20px; max-height: 300px; overflow: auto;text-align: center;" class="ctr-list"></div></div>`,
-            '<style>.ctr-list::-webkit-scrollbar-track{background-color:#F5F5F5;} .ctr-list::-webkit-scrollbar-thumb{border:none;background-color: lightgrey}</style>'
-      );
-          return data;
+    :root {
+      --bg:      #0d0f14;
+      --surface: #13161e;
+      --surf2:   #1a1e2a;
+      --border:  #2a2f40;
+      --gold:    #c9a84c;
+      --gold2:   #e8c96d;
+      --red:     #c94c4c;
+      --blue:    #3d87f5;
+      --green:   #2cab21;
+      --text:    #d8dae8;
+      --dim:     #6a6f88;
+      --glow:    rgba(201,168,76,0.2);
+      --r:       10px;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      padding-bottom: 40px;
+    }
+
+    #ctp-combat {
+      position: relative !important;
+      max-width: 760px !important;
+      min-width: 280px !important;
+      width: 100% !important;
+      margin: 28px auto !important;
+      padding: 20px 18px 18px !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 0 50px rgba(0,0,0,.55) !important;
+    }
+
+    #ctb-new {
+      background: var(--green) !important;
+      border: none !important;
+      border-radius: var(--r) !important;
+      color: #fff !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 19px !important;
+      font-weight: 700 !important;
+      padding: 7px 18px !important;
+      cursor: pointer !important;
+      margin-right: 0 !important;
+      transition: filter .15s !important;
+      line-height: 1 !important;
+    }
+    #ctb-new:hover { filter: brightness(1.2) !important; }
+
+    #ctp-combat > div[style*="absolute"] {
+      position: absolute !important;
+      right: 18px !important;
+      top: 18px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+
+    #combat-restart {
+      background: var(--red) !important;
+      border: none !important;
+      border-radius: var(--r) !important;
+      color: #fff !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      padding: 7px 14px !important;
+      cursor: pointer !important;
+      margin-right: 0 !important;
+      transition: filter .15s !important;
+    }
+    #combat-restart:hover { filter: brightness(1.2) !important; }
+
+    #combat-reset-all {
+      background: #6b1a1a !important;
+      border: 1px solid var(--red) !important;
+      border-radius: var(--r) !important;
+      color: #ffaaaa !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      padding: 7px 14px !important;
+      cursor: pointer !important;
+      margin-right: 0 !important;
+      transition: filter .15s !important;
+    }
+    #combat-reset-all:hover { filter: brightness(1.25) !important; }
+
+    #combat-next {
+      background: var(--blue) !important;
+      border: none !important;
+      border-radius: var(--r) !important;
+      color: #fff !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      padding: 7px 14px !important;
+      cursor: pointer !important;
+      margin-left: 0 !important;
+      transition: filter .15s !important;
+    }
+    #combat-next:hover { filter: brightness(1.2) !important; }
+
+    #ctp-combat span[style*="color"] {
+      color: var(--dim) !important;
+      font-size: 11px !important;
+      letter-spacing: 2px !important;
+      text-transform: uppercase !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      background: var(--surf2) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--r) !important;
+      padding: 5px 10px !important;
+    }
+    #combat-turn {
+      width: 48px !important;
+      background: transparent !important;
+      border: none !important;
+      color: var(--gold2) !important;
+      font-family: 'Cinzel', serif !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      text-align: center !important;
+      outline: none !important;
+    }
+
+    /* ── List ── */
+    .ctr-list {
+      color: var(--text) !important;
+      margin-top: 16px !important;
+      max-height: 55vh !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      text-align: left !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 5px !important;
+      padding-right: 4px !important;
+    }
+    .ctr-list::-webkit-scrollbar { width: 4px; }
+    .ctr-list::-webkit-scrollbar-track { background: transparent !important; }
+    .ctr-list::-webkit-scrollbar-thumb { background: var(--border) !important; border-radius: 4px !important; border: none !important; }
+
+    /* ── Row ── */
+    .ctr-element {
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      white-space: nowrap !important;
+      background: var(--surf2) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--r) !important;
+      padding: 7px 10px !important;
+      transition: border-color .2s, box-shadow .2s !important;
+      position: relative !important;
+    }
+    .ctr-element:hover { border-color: #3a3f52 !important; }
+    .ctr-element.is-turn {
+      border-color: var(--gold) !important;
+      box-shadow: inset 0 0 20px rgba(201,168,76,0.05) !important;
+    }
+    .ctr-element.is-turn .ctr-name { color: var(--gold2) !important; }
+
+    /* new row animation */
+    .ctr-element.row-new {
+      animation: fadeSlide .18s ease forwards;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Fixed left block ── */
+    .ctr-fixed-space {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      background: transparent !important;
+      position: static !important;
+      padding: 0 !important;
+    }
+    /* drag handle */
+    .ctr-fixed-space > span.drag-handle {
+      color: var(--dim) !important;
+      font-size: 16px !important;
+      padding-right: 0 !important;
+      cursor: grab !important;
+      transition: color .15s !important;
+      display: inline-block;
+    }
+    .ctr-element:hover .ctr-fixed-space > span.drag-handle { color: var(--gold) !important; }
+
+    /* ── Radio ── */
+    input[type="radio"].tracker-turn {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      width: 15px !important;
+      height: 15px !important;
+      border: 2px solid var(--border) !important;
+      border-radius: 50% !important;
+      background: transparent !important;
+      cursor: pointer !important;
+      flex-shrink: 0 !important;
+      transition: all .15s !important;
+      margin: 0 !important;
+    }
+    input[type="radio"].tracker-turn:checked {
+      border-color: var(--gold) !important;
+      background: var(--gold) !important;
+      box-shadow: 0 0 8px var(--glow) !important;
+    }
+
+    /* ── Text inputs ── */
+    .ctr-name, .ctr-iniciativa, .ctr-vida, .ctr-notes {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      border-radius: 6px !important;
+      color: var(--text) !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      padding: 4px 8px !important;
+      outline: none !important;
+      transition: border-color .15s, background .15s !important;
+    }
+    .ctr-name:focus, .ctr-iniciativa:focus, .ctr-vida:focus, .ctr-notes:focus {
+      background: rgba(255,255,255,0.04) !important;
+      border-color: var(--gold) !important;
+    }
+    .ctr-name::placeholder, .ctr-iniciativa::placeholder,
+    .ctr-vida::placeholder, .ctr-notes::placeholder { color: var(--dim) !important; }
+
+    .ctr-name       { width: 120px !important; font-weight: 600 !important; }
+    .ctr-iniciativa { width: 80px !important; text-align: center !important; }
+    .ctr-vida       { width: 80px !important; text-align: center !important; }
+    .ctr-notes      { flex: 1 !important; min-width: 0 !important; }
+
+    /* ── Delete ── */
+    .ctr-delete {
+      background: var(--red) !important;
+      border: none !important;
+      border-radius: 6px !important;
+      color: #fff !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      padding: 4px 9px !important;
+      cursor: pointer !important;
+      flex-shrink: 0 !important;
+      transition: filter .15s !important;
+      z-index: auto !important;
+    }
+    .ctr-delete:hover { filter: brightness(1.25) !important; }
+
+    /* ── Sortable ── */
+    .ui-sortable-helper {
+      opacity: .85 !important;
+      box-shadow: 0 8px 30px rgba(0,0,0,.6) !important;
+      border-color: var(--gold) !important;
+      display: flex !important;
+    }
+    .ui-sortable-placeholder {
+      border: 1px dashed var(--gold) !important;
+      border-radius: var(--r) !important;
+      background: var(--glow) !important;
+      visibility: visible !important;
+      min-height: 38px !important;
+    }
+
+    @media (max-width: 500px) {
+      .ctr-name       { width: 85px !important; }
+      .ctr-iniciativa { width: 55px !important; }
+      .ctr-vida       { width: 55px !important; }
+      .ctr-notes      { display: none !important; }
+      #ctp-combat > div[style*="absolute"] {
+        position: static !important;
+        margin-top: 10px !important;
+        flex-wrap: wrap !important;
       }
-  });
-    </script>
-  </body>
+    }
+  </style>
+</head>
+<body>
+<script>
+$(document).ready(function () {
+  const buttonStyle = 'z-index:99;background-color:rgb(61,135,245);padding:10px;color:white;border-radius:10px;border:none;cursor:pointer;';
+  const buttonClasses = 'button-text button button-flex clickable dark';
+  const data = init();
+
+  // ── sortable: init once, never destroyed ──────────────────────────────
+  let isDragging = false;
+
+  function initSortable() {
+    $(".ctr-list").sortable({
+      handle: '.drag-handle',
+      placeholder: 'ui-sortable-placeholder',
+      tolerance: 'pointer',
+      start: function (e, ui) {
+        isDragging = true;
+        saveData();
+        // stamp origin idx directly on the item (not helper, helper can be null)
+        ui.item.attr('data-drag-origin', ui.item.data('idx'));
+        // carry is-turn visually with the dragged element
+        if (+ui.item.data('idx') === data.combat.hasTurn) {
+          ui.item.addClass('is-turn');
+          if (ui.helper) ui.helper.addClass('is-turn');
+        }
+      },
+      stop: function (e, ui) {
+        isDragging = false;
+        // snapshot the tracker object that was active BEFORE reorder
+        const activeTracker = data.combat.trackers[data.combat.hasTurn];
+        // rebuild order from new DOM positions
+        const newOrder = [];
+        $(".ctr-element[data-idx]").each(function () {
+          const origIdx = +$(this).data('idx');
+          if (data.combat.trackers[origIdx] !== undefined) {
+            newOrder.push(data.combat.trackers[origIdx]);
+          }
+        });
+        data.combat.trackers = newOrder;
+        // find where the active tracker landed
+        const newActive = newOrder.indexOf(activeTracker);
+        data.combat.hasTurn = newActive >= 0 ? newActive : 0;
+        applyTurnClass();
+        reassignIdx();
+        saveData();
+      }
+    });
+  }
+
+  // ── smart render: diff existing rows, only add/remove what changed ────
+  function renderTracker() {
+    const list   = $(".ctr-list");
+    const rows   = list.children(".ctr-element");
+    const count  = data.combat.trackers.length;
+
+    // add missing rows
+    for (let i = rows.length; i < count; i++) {
+      const pj  = data.combat.trackers[i];
+      const $el = makeRow(i, pj);
+      $el.addClass('row-new');
+      list.append($el);
+    }
+
+    // remove extra rows (from the end)
+    for (let i = rows.length - 1; i >= count; i--) {
+      list.children(".ctr-element").eq(i).remove();
+    }
+
+    // update values in all existing rows without touching the DOM structure
+    list.children(".ctr-element").each(function (i) {
+      const pj = data.combat.trackers[i];
+      if (!pj) return;
+      const $el = $(this);
+      $el.data('idx', i).attr('data-idx', i);
+      $el.find('input[name="turn"]').val(i);
+      // only update value if not focused (avoid fighting the user mid-type)
+      if (!$el.find(".ctr-name").is(':focus'))       $el.find(".ctr-name").val(pj.name);
+      if (!$el.find(".ctr-iniciativa").is(':focus')) $el.find(".ctr-iniciativa").val(pj.status.iniciativa);
+      if (!$el.find(".ctr-vida").is(':focus'))       $el.find(".ctr-vida").val(pj.status.vida);
+      if (!$el.find(".ctr-notes").is(':focus'))      $el.find(".ctr-notes").val(pj.notes);
+      $el.find(".ctr-delete").attr('index', i).data('index', i);
+    });
+
+    applyTurnClass();
+    bindRowEvents();
+  }
+
+  function makeRow(i, pj) {
+    return $(`
+      <div class="ctr-element" data-idx="${i}">
+        <div class="ctr-fixed-space" style="display:inline-block;padding:1px;position:sticky;left:0;">
+          <span class="drag-handle" style="cursor:grab;padding-right:10px;">&#9776;</span>
+          <input type="radio" class="tracker-turn" name="turn" value="${i}">
+          <input type="text" style="width:120px" class="ctr-name" placeholder="Nombre" value="${esc(pj.name)}"/>
+        </div>
+        <input type="text" style="width:80px;" class="ctr-iniciativa" placeholder="Iniciativa" value="${esc(pj.status.iniciativa)}"/>
+        <input type="text" style="width:80px;" class="ctr-vida" placeholder="Vida" value="${esc(pj.status.vida)}"/>
+        <input type="text" class="ctr-notes" placeholder="Notas" value="${esc(pj.notes)}"/>
+        <button style="${buttonStyle} padding:8px;background-color:rgb(255,54,51);padding-top:4px;padding-bottom:4px;display:inline-block;"
+                class="ctr-delete ${buttonClasses}" index="${i}">D</button>
+      </div>`);
+  }
+
+  function applyTurnClass() {
+    if (isDragging) return; // no tocar el DOM mientras jQuery UI mueve elementos
+    $(".ctr-element").each(function (i) {
+      $(this).toggleClass('is-turn', i === data.combat.hasTurn);
+      $(this).find('input[name="turn"]').prop('checked', i === data.combat.hasTurn);
+    });
+  }
+
+  function reassignIdx() {
+    $(".ctr-element").each(function (i) {
+      $(this).data('idx', i).attr('data-idx', i);
+      $(this).find('input[name="turn"]').val(i);
+      $(this).find('.ctr-delete').attr('index', i);
+    });
+  }
+
+  function bindRowEvents() {
+    // delete — unbind first to avoid stacking
+    $(".ctr-delete").off('click').on('click', function (e) {
+      e.stopPropagation();
+      saveData();
+      const index = +$(this).attr('index');
+      if (data.combat.hasTurn === index) data.combat.hasTurn = 0;
+      else if (data.combat.hasTurn > index) data.combat.hasTurn--;
+      data.combat.trackers.splice(index, 1);
+      // remove row directly, then re-render to fix indices
+      $(this).closest('.ctr-element').remove();
+      renderTracker();
+      saveData();
+    });
+
+    // turn radio
+    $(".tracker-turn").off('click').on('click', function () {
+      data.combat.hasTurn = +$(this).val();
+      applyTurnClass();
+    });
+  }
+
+  // ── save: reads current DOM values ────────────────────────────────────
+  function saveData() {
+    $(".ctr-element").each(function (i) {
+      data.combat.trackers[i] = {
+        name:   $(this).find(".ctr-name").val()        || '',
+        status: {
+          vida:       $(this).find(".ctr-vida").val()       || '',
+          iniciativa: $(this).find(".ctr-iniciativa").val() || ''
+        },
+        notes:  $(this).find(".ctr-notes").val()       || ''
+      };
+    });
+    data.combat.turn = +$('#combat-turn').val() || 0;
+    data.notes = $('#cti-notes').val() || '';
+    localStorage.setItem('rpg-data', JSON.stringify(data));
+  }
+
+  function clickEvents() {
+    $('#combat-restart').click(() => {
+      saveData();
+      data.combat.hasTurn = 0;
+      data.combat.turn    = 0;
+      $('#combat-turn').val(0);
+      renderTracker();
+      saveData();
+    });
+
+    $('#combat-reset-all').click(() => {
+      data.combat.trackers = [newTracker()];
+      data.combat.hasTurn  = 0;
+      data.combat.turn     = 0;
+      $('#combat-turn').val(0);
+      renderTracker();
+      saveData();
+    });
+
+    $("#combat-next").click(() => {
+      saveData();
+      if (data.combat.hasTurn === data.combat.trackers.length - 1) {
+        data.combat.hasTurn = 0;
+        data.combat.turn++;
+        $('#combat-turn').val(data.combat.turn);
+      } else {
+        data.combat.hasTurn++;
+      }
+      applyTurnClass();
+      saveData();
+    });
+
+    $('#ctb-new').click(() => {
+      saveData();
+      data.combat.trackers.push(newTracker());
+      renderTracker();
+      saveData();
+      setTimeout(() => {
+        const list = $(".ctr-list")[0];
+        if (list) list.scrollTop = list.scrollHeight;
+      }, 50);
+    });
+  }
+
+  function newTracker() {
+    return { name: '', status: { vida: '', iniciativa: '' }, notes: '' };
+  }
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  }
+
+  function init() {
+    let loadedData;
+    try { loadedData = JSON.parse(localStorage.getItem('rpg-data')); } catch(e) {}
+
+    const d = loadedData || {
+      combat: { turn: 0, hasTurn: 0, trackers: [newTracker(), newTracker(), newTracker()] },
+      notes: ''
+    };
+
+    $('body').append(`
+      <div id="ctp-combat" style="position:relative;max-width:725px;min-width:280px;width:-webkit-fill-available;width:-moz-fill-available;">
+        <button class="${buttonClasses}" style="${buttonStyle}padding-top:7px;padding-bottom:7px;margin-right:20px;background-color:rgb(44,171,33);display:inline-block;" id="ctb-new">+</button>
+        <div style="position:absolute;right:20px;top:7px;">
+          <button id="combat-restart" style="${buttonStyle}margin-right:10px;padding-top:7px;padding-bottom:7px;display:inline-block;background-color:rgb(255,54,51);" class="${buttonClasses}">Reset</button>
+          <button id="combat-reset-all" style="${buttonStyle}margin-right:10px;padding-top:7px;padding-bottom:7px;display:inline-block;background-color:rgb(120,30,30);" class="${buttonClasses}">Reset All</button>
+          <span style="color:#000000bd;">Turn: <input type="number" style="width:50px;" id="combat-turn" value="${d.combat.turn}" placeholder="Turno"></span>
+          <button id="combat-next" style="${buttonStyle}margin-left:10px;padding-top:7px;padding-bottom:7px;display:inline-block;" class="${buttonClasses}">Siguiente</button>
+        </div>
+        <div style="color:#000000bd;margin-top:20px;max-height:300px;overflow:auto;text-align:center;" class="ctr-list"></div>
+      </div>`
+    );
+    return d;
+  }
+
+  // ── bootstrap ─────────────────────────────────────────────────────────
+  renderTracker();
+  initSortable();     // sortable init una sola vez
+  clickEvents();
+  setInterval(saveData, 3000);
+});
+</script>
+</body>
 </html>
