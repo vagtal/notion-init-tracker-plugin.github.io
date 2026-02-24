@@ -23,7 +23,8 @@
       --text:    #d8dae8;
       --dim:     #6a6f88;
       --glow:    rgba(201,168,76,0.2);
-      --r:       10px;
+      --r:       12px;
+      --fs:      17px;
     }
 
     html, body {
@@ -31,108 +32,87 @@
       background: var(--bg);
       color: var(--text);
       font-family: 'Rajdhani', sans-serif;
-      font-size: 15px;
+      font-size: var(--fs);
       padding-bottom: 40px;
     }
 
+    /* ══ WRAPPER ══ */
     #ctp-combat {
       position: relative !important;
-      max-width: 760px !important;
-      min-width: 280px !important;
-      width: 100% !important;
-      margin: 28px auto !important;
-      padding: 20px 18px 18px !important;
+      max-width: 900px !important;
+      min-width: 0 !important;
+      width: calc(100% - 24px) !important;
+      margin: 20px auto !important;
+      padding: 18px !important;
       background: var(--surface) !important;
       border: 1px solid var(--border) !important;
-      border-radius: 16px !important;
-      box-shadow: 0 0 50px rgba(0,0,0,.55) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 0 60px rgba(0,0,0,.6) !important;
     }
 
-    #ctb-new {
-      background: var(--green) !important;
-      border: none !important;
-      border-radius: var(--r) !important;
-      color: #fff !important;
-      font-family: 'Rajdhani', sans-serif !important;
-      font-size: 19px !important;
-      font-weight: 700 !important;
-      padding: 7px 18px !important;
-      cursor: pointer !important;
-      margin-right: 0 !important;
-      transition: filter .15s !important;
-      line-height: 1 !important;
+    /* ══ TOPBAR — rebuilt by postInit() into .tracker-topbar ══ */
+    .tracker-topbar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 10px !important;
+      flex-wrap: wrap !important;
     }
-    #ctb-new:hover { filter: brightness(1.2) !important; }
-
-    #ctp-combat > div[style*="absolute"] {
-      position: absolute !important;
-      right: 18px !important;
-      top: 18px !important;
+    .tracker-topbar-left  { display: flex !important; align-items: center !important; }
+    .tracker-topbar-right {
       display: flex !important;
       align-items: center !important;
       gap: 8px !important;
+      flex-wrap: wrap !important;
+      /* neutralise JS inline position:absolute */
+      position: static !important;
+      top: auto !important;
+      right: auto !important;
     }
 
-    #combat-restart {
-      background: var(--red) !important;
-      border: none !important;
+    /* ══ BUTTONS ══ */
+    #ctb-new, #combat-restart, #combat-reset-all, #combat-next {
       border-radius: var(--r) !important;
-      color: #fff !important;
       font-family: 'Rajdhani', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      letter-spacing: 1px !important;
-      padding: 7px 14px !important;
+      font-size: var(--fs) !important;
+      font-weight: 700 !important;
       cursor: pointer !important;
-      margin-right: 0 !important;
-      transition: filter .15s !important;
+      transition: filter .15s, transform .1s !important;
+      white-space: nowrap !important;
+      line-height: 1 !important;
+      border: none !important;
+      padding: 10px 18px !important;
+      margin: 0 !important;
     }
-    #combat-restart:hover { filter: brightness(1.2) !important; }
+    #ctb-new:active, #combat-restart:active,
+    #combat-reset-all:active, #combat-next:active { transform: scale(.97) !important; }
 
+    #ctb-new        { background: var(--green) !important; color: #fff !important; }
+    #combat-restart  { background: var(--red)   !important; color: #fff !important; }
+    #combat-next     { background: var(--blue)  !important; color: #fff !important; }
     #combat-reset-all {
-      background: #6b1a1a !important;
-      border: 1px solid var(--red) !important;
-      border-radius: var(--r) !important;
+      background: #3a0d0d !important;
+      border: 1px solid #7a2020 !important;
       color: #ffaaaa !important;
-      font-family: 'Rajdhani', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      letter-spacing: 1px !important;
-      padding: 7px 14px !important;
-      cursor: pointer !important;
-      margin-right: 0 !important;
-      transition: filter .15s !important;
     }
-    #combat-reset-all:hover { filter: brightness(1.25) !important; }
+    #ctb-new:hover, #combat-restart:hover,
+    #combat-next:hover         { filter: brightness(1.18) !important; }
+    #combat-reset-all:hover    { filter: brightness(1.3)  !important; }
 
-    #combat-next {
-      background: var(--blue) !important;
-      border: none !important;
-      border-radius: var(--r) !important;
-      color: #fff !important;
-      font-family: 'Rajdhani', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: 600 !important;
-      letter-spacing: 1px !important;
-      padding: 7px 14px !important;
-      cursor: pointer !important;
-      margin-left: 0 !important;
-      transition: filter .15s !important;
-    }
-    #combat-next:hover { filter: brightness(1.2) !important; }
-
+    /* ── turn badge ── */
     #ctp-combat span[style*="color"] {
-      color: var(--dim) !important;
-      font-size: 11px !important;
-      letter-spacing: 2px !important;
-      text-transform: uppercase !important;
       display: inline-flex !important;
       align-items: center !important;
-      gap: 5px !important;
+      gap: 6px !important;
       background: var(--surf2) !important;
       border: 1px solid var(--border) !important;
       border-radius: var(--r) !important;
-      padding: 5px 10px !important;
+      padding: 8px 12px !important;
+      color: var(--dim) !important;
+      font-size: 12px !important;
+      letter-spacing: 2px !important;
+      text-transform: uppercase !important;
+      white-space: nowrap !important;
     }
     #combat-turn {
       width: 48px !important;
@@ -140,165 +120,219 @@
       border: none !important;
       color: var(--gold2) !important;
       font-family: 'Cinzel', serif !important;
-      font-size: 15px !important;
+      font-size: 17px !important;
       font-weight: 600 !important;
       text-align: center !important;
       outline: none !important;
     }
 
-    /* ── List ── */
+    /* ══ LIST ══ */
     .ctr-list {
       color: var(--text) !important;
-      margin-top: 16px !important;
-      max-height: 55vh !important;
+      margin-top: 14px !important;
+      max-height: 62vh !important;
       overflow-y: auto !important;
       overflow-x: hidden !important;
       text-align: left !important;
       display: flex !important;
       flex-direction: column !important;
-      gap: 5px !important;
+      gap: 6px !important;
       padding-right: 4px !important;
     }
-    .ctr-list::-webkit-scrollbar { width: 4px; }
+    .ctr-list::-webkit-scrollbar       { width: 4px; }
     .ctr-list::-webkit-scrollbar-track { background: transparent !important; }
     .ctr-list::-webkit-scrollbar-thumb { background: var(--border) !important; border-radius: 4px !important; border: none !important; }
 
-    /* ── Row ── */
+    /* ══ ROW — CSS grid
+       col1: drag-handle
+       col2: radio
+       col3: name (flex)
+       col4: iniciativa
+       col5: vida
+       col6: delete (spans both rows)
+       row2: notes across cols 2-5
+    ══ */
     .ctr-element {
-      display: flex !important;
+      display: grid !important;
+      grid-template-columns: 24px 22px 1fr 96px 96px auto !important;
+      grid-template-rows: auto auto !important;
       align-items: center !important;
-      gap: 6px !important;
-      white-space: nowrap !important;
+      column-gap: 8px !important;
+      row-gap: 5px !important;
       background: var(--surf2) !important;
       border: 1px solid var(--border) !important;
       border-radius: var(--r) !important;
-      padding: 7px 10px !important;
+      padding: 10px 12px !important;
       transition: border-color .2s, box-shadow .2s !important;
       position: relative !important;
+      white-space: normal !important;   /* allow wrap inside grid */
     }
     .ctr-element:hover { border-color: #3a3f52 !important; }
     .ctr-element.is-turn {
       border-color: var(--gold) !important;
-      box-shadow: inset 0 0 20px rgba(201,168,76,0.05) !important;
+      box-shadow: inset 0 0 24px rgba(201,168,76,.07), 0 0 0 1px rgba(201,168,76,.15) !important;
     }
     .ctr-element.is-turn .ctr-name { color: var(--gold2) !important; }
-
-    /* new row animation */
-    .ctr-element.row-new {
-      animation: fadeSlide .18s ease forwards;
-    }
+    .ctr-element.row-new { animation: fadeSlide .18s ease forwards; }
     @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(-6px); }
+      from { opacity: 0; transform: translateY(-5px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Fixed left block ── */
+    /* .ctr-fixed-space dissolves into grid via display:contents */
     .ctr-fixed-space {
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 6px !important;
+      display: contents !important;
       background: transparent !important;
       position: static !important;
       padding: 0 !important;
     }
-    /* drag handle */
-    .ctr-fixed-space > span.drag-handle {
+
+    .drag-handle {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
       color: var(--dim) !important;
-      font-size: 16px !important;
-      padding-right: 0 !important;
+      font-size: 18px !important;
       cursor: grab !important;
       transition: color .15s !important;
-      display: inline-block;
+      line-height: 1 !important;
+      padding: 0 !important;
+      align-self: center !important;
+      justify-self: center !important;
     }
-    .ctr-element:hover .ctr-fixed-space > span.drag-handle { color: var(--gold) !important; }
+    .ctr-element:hover .drag-handle { color: var(--gold) !important; }
 
-    /* ── Radio ── */
     input[type="radio"].tracker-turn {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
       appearance: none !important;
       -webkit-appearance: none !important;
-      width: 15px !important;
-      height: 15px !important;
+      width: 18px !important;
+      height: 18px !important;
       border: 2px solid var(--border) !important;
       border-radius: 50% !important;
       background: transparent !important;
       cursor: pointer !important;
-      flex-shrink: 0 !important;
       transition: all .15s !important;
       margin: 0 !important;
+      align-self: center !important;
+      justify-self: center !important;
+      flex-shrink: 0 !important;
     }
     input[type="radio"].tracker-turn:checked {
       border-color: var(--gold) !important;
       background: var(--gold) !important;
-      box-shadow: 0 0 8px var(--glow) !important;
+      box-shadow: 0 0 10px var(--glow) !important;
     }
 
-    /* ── Text inputs ── */
+    /* shared input base */
     .ctr-name, .ctr-iniciativa, .ctr-vida, .ctr-notes {
       background: transparent !important;
       border: 1px solid transparent !important;
-      border-radius: 6px !important;
+      border-radius: 8px !important;
       color: var(--text) !important;
       font-family: 'Rajdhani', sans-serif !important;
-      font-size: 14px !important;
+      font-size: var(--fs) !important;
       font-weight: 500 !important;
-      padding: 4px 8px !important;
+      padding: 5px 9px !important;
       outline: none !important;
       transition: border-color .15s, background .15s !important;
+      min-width: 0 !important;
+      width: 100% !important;
     }
-    .ctr-name:focus, .ctr-iniciativa:focus, .ctr-vida:focus, .ctr-notes:focus {
-      background: rgba(255,255,255,0.04) !important;
+    .ctr-name:focus, .ctr-iniciativa:focus,
+    .ctr-vida:focus, .ctr-notes:focus {
+      background: rgba(255,255,255,.04) !important;
       border-color: var(--gold) !important;
     }
     .ctr-name::placeholder, .ctr-iniciativa::placeholder,
-    .ctr-vida::placeholder, .ctr-notes::placeholder { color: var(--dim) !important; }
+    .ctr-vida::placeholder,  .ctr-notes::placeholder {
+      color: var(--dim) !important; font-weight: 400 !important;
+    }
 
-    .ctr-name       { width: 120px !important; font-weight: 600 !important; }
-    .ctr-iniciativa { width: 80px !important; text-align: center !important; }
-    .ctr-vida       { width: 80px !important; text-align: center !important; }
-    .ctr-notes      { flex: 1 !important; min-width: 0 !important; }
+    .ctr-name {
+      grid-column: 3 !important; grid-row: 1 !important;
+      font-weight: 600 !important;
+    }
+    .ctr-iniciativa {
+      grid-column: 4 !important; grid-row: 1 !important;
+      text-align: center !important;
+    }
+    .ctr-vida {
+      grid-column: 5 !important; grid-row: 1 !important;
+      text-align: center !important;
+    }
+    /* notes: row 2, spans from radio col to before delete */
+    .ctr-notes {
+      grid-column: 2 / 6 !important; grid-row: 2 !important;
+      font-size: 14px !important;
+    }
 
-    /* ── Delete ── */
+    /* delete: col 6, spans both rows — always on the right */
     .ctr-delete {
+      grid-column: 6 !important; grid-row: 1 / 3 !important;
+      align-self: center !important;
       background: var(--red) !important;
       border: none !important;
-      border-radius: 6px !important;
+      border-radius: 8px !important;
       color: #fff !important;
       font-family: 'Rajdhani', sans-serif !important;
-      font-size: 12px !important;
+      font-size: 15px !important;
       font-weight: 700 !important;
-      padding: 4px 9px !important;
+      padding: 8px 12px !important;
       cursor: pointer !important;
-      flex-shrink: 0 !important;
       transition: filter .15s !important;
       z-index: auto !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
     }
     .ctr-delete:hover { filter: brightness(1.25) !important; }
 
-    /* ── Sortable ── */
+    /* ══ SORTABLE ══ */
     .ui-sortable-helper {
-      opacity: .85 !important;
-      box-shadow: 0 8px 30px rgba(0,0,0,.6) !important;
+      opacity: .88 !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,.7) !important;
       border-color: var(--gold) !important;
-      display: flex !important;
+      display: grid !important;
     }
     .ui-sortable-placeholder {
-      border: 1px dashed var(--gold) !important;
+      border: 2px dashed rgba(201,168,76,.4) !important;
       border-radius: var(--r) !important;
-      background: var(--glow) !important;
+      background: rgba(201,168,76,.04) !important;
       visibility: visible !important;
-      min-height: 38px !important;
+      min-height: 54px !important;
     }
 
-    @media (max-width: 500px) {
-      .ctr-name       { width: 85px !important; }
-      .ctr-iniciativa { width: 55px !important; }
-      .ctr-vida       { width: 55px !important; }
-      .ctr-notes      { display: none !important; }
-      #ctp-combat > div[style*="absolute"] {
-        position: static !important;
-        margin-top: 10px !important;
-        flex-wrap: wrap !important;
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 640px) {
+      :root { --fs: 15px; }
+
+      #ctp-combat {
+        width: calc(100% - 12px) !important;
+        padding: 14px 12px !important;
+        border-radius: 14px !important;
       }
+
+      #ctb-new, #combat-restart, #combat-reset-all, #combat-next {
+        padding: 9px 13px !important;
+        font-size: 14px !important;
+      }
+
+      /* tighter num columns on small screens */
+      .ctr-element {
+        grid-template-columns: 22px 20px 1fr 72px 72px auto !important;
+        column-gap: 5px !important;
+      }
+
+      .ctr-notes { font-size: 13px !important; }
+    }
+
+    @media (max-width: 400px) {
+      .ctr-element {
+        grid-template-columns: 18px 18px 1fr 60px 60px auto !important;
+        column-gap: 4px !important;
+        padding: 8px !important;
+      }
+      .drag-handle { font-size: 15px !important; }
     }
   </style>
 </head>
@@ -309,9 +343,24 @@ $(document).ready(function () {
   const buttonClasses = 'button-text button button-flex clickable dark';
   const data = init();
 
-  // ── sortable: init once, never destroyed ──────────────────────────────
+  // ── postInit: neutralise position:absolute on controls div
+  //    and build a proper flex topbar ────────────────────────
+  (function postInit() {
+    const $new      = $('#ctb-new');
+    const $ctrlDiv  = $('#ctp-combat > div[style*="absolute"]');
+
+    const $topbar = $('<div class="tracker-topbar"></div>');
+    const $left   = $('<div class="tracker-topbar-left"></div>').append($new);
+    const $right  = $('<div class="tracker-topbar-right"></div>').append($ctrlDiv.children());
+
+    $ctrlDiv.remove();
+    $topbar.append($left).append($right);
+    $('#ctp-combat').prepend($topbar);
+  })();
+
   let isDragging = false;
 
+  // ── sortable (init once) ──────────────────────────────────
   function initSortable() {
     $(".ctr-list").sortable({
       handle: '.drag-handle',
@@ -320,28 +369,22 @@ $(document).ready(function () {
       start: function (e, ui) {
         isDragging = true;
         saveData();
-        // stamp origin idx directly on the item (not helper, helper can be null)
         ui.item.attr('data-drag-origin', ui.item.data('idx'));
-        // carry is-turn visually with the dragged element
         if (+ui.item.data('idx') === data.combat.hasTurn) {
           ui.item.addClass('is-turn');
           if (ui.helper) ui.helper.addClass('is-turn');
         }
       },
-      stop: function (e, ui) {
+      stop: function () {
         isDragging = false;
-        // snapshot the tracker object that was active BEFORE reorder
         const activeTracker = data.combat.trackers[data.combat.hasTurn];
-        // rebuild order from new DOM positions
         const newOrder = [];
         $(".ctr-element[data-idx]").each(function () {
           const origIdx = +$(this).data('idx');
-          if (data.combat.trackers[origIdx] !== undefined) {
+          if (data.combat.trackers[origIdx] !== undefined)
             newOrder.push(data.combat.trackers[origIdx]);
-          }
         });
         data.combat.trackers = newOrder;
-        // find where the active tracker landed
         const newActive = newOrder.indexOf(activeTracker);
         data.combat.hasTurn = newActive >= 0 ? newActive : 0;
         applyTurnClass();
@@ -351,38 +394,34 @@ $(document).ready(function () {
     });
   }
 
-  // ── smart render: diff existing rows, only add/remove what changed ────
+  // ── smart render (no full DOM wipe) ──────────────────────
   function renderTracker() {
-    const list   = $(".ctr-list");
-    const rows   = list.children(".ctr-element");
-    const count  = data.combat.trackers.length;
+    const list  = $(".ctr-list");
+    const count = data.combat.trackers.length;
+    const rows  = list.children(".ctr-element");
 
-    // add missing rows
+    // add missing
     for (let i = rows.length; i < count; i++) {
-      const pj  = data.combat.trackers[i];
-      const $el = makeRow(i, pj);
+      const $el = makeRow(i, data.combat.trackers[i]);
       $el.addClass('row-new');
       list.append($el);
     }
-
-    // remove extra rows (from the end)
-    for (let i = rows.length - 1; i >= count; i--) {
+    // remove extra (from end)
+    for (let i = rows.length - 1; i >= count; i--)
       list.children(".ctr-element").eq(i).remove();
-    }
 
-    // update values in all existing rows without touching the DOM structure
+    // update values without touching DOM structure
     list.children(".ctr-element").each(function (i) {
       const pj = data.combat.trackers[i];
       if (!pj) return;
       const $el = $(this);
       $el.data('idx', i).attr('data-idx', i);
       $el.find('input[name="turn"]').val(i);
-      // only update value if not focused (avoid fighting the user mid-type)
       if (!$el.find(".ctr-name").is(':focus'))       $el.find(".ctr-name").val(pj.name);
       if (!$el.find(".ctr-iniciativa").is(':focus')) $el.find(".ctr-iniciativa").val(pj.status.iniciativa);
       if (!$el.find(".ctr-vida").is(':focus'))       $el.find(".ctr-vida").val(pj.status.vida);
       if (!$el.find(".ctr-notes").is(':focus'))      $el.find(".ctr-notes").val(pj.notes);
-      $el.find(".ctr-delete").attr('index', i).data('index', i);
+      $el.find(".ctr-delete").attr('index', i);
     });
 
     applyTurnClass();
@@ -395,18 +434,18 @@ $(document).ready(function () {
         <div class="ctr-fixed-space" style="display:inline-block;padding:1px;position:sticky;left:0;">
           <span class="drag-handle" style="cursor:grab;padding-right:10px;">&#9776;</span>
           <input type="radio" class="tracker-turn" name="turn" value="${i}">
-          <input type="text" style="width:120px" class="ctr-name" placeholder="Nombre" value="${esc(pj.name)}"/>
+          <input type="text" class="ctr-name" placeholder="Nombre" value="${esc(pj.name)}"/>
         </div>
-        <input type="text" style="width:80px;" class="ctr-iniciativa" placeholder="Iniciativa" value="${esc(pj.status.iniciativa)}"/>
-        <input type="text" style="width:80px;" class="ctr-vida" placeholder="Vida" value="${esc(pj.status.vida)}"/>
-        <input type="text" class="ctr-notes" placeholder="Notas" value="${esc(pj.notes)}"/>
-        <button style="${buttonStyle} padding:8px;background-color:rgb(255,54,51);padding-top:4px;padding-bottom:4px;display:inline-block;"
-                class="ctr-delete ${buttonClasses}" index="${i}">D</button>
+        <input type="text" class="ctr-iniciativa" placeholder="Init" value="${esc(pj.status.iniciativa)}"/>
+        <input type="text" class="ctr-vida" placeholder="HP" value="${esc(pj.status.vida)}"/>
+        <input type="text" class="ctr-notes" placeholder="Notas…" value="${esc(pj.notes)}"/>
+        <button style="${buttonStyle}padding:8px;background-color:rgb(255,54,51);padding-top:4px;padding-bottom:4px;display:inline-block;"
+                class="ctr-delete ${buttonClasses}" index="${i}">✕</button>
       </div>`);
   }
 
   function applyTurnClass() {
-    if (isDragging) return; // no tocar el DOM mientras jQuery UI mueve elementos
+    if (isDragging) return;
     $(".ctr-element").each(function (i) {
       $(this).toggleClass('is-turn', i === data.combat.hasTurn);
       $(this).find('input[name="turn"]').prop('checked', i === data.combat.hasTurn);
@@ -422,7 +461,6 @@ $(document).ready(function () {
   }
 
   function bindRowEvents() {
-    // delete — unbind first to avoid stacking
     $(".ctr-delete").off('click').on('click', function (e) {
       e.stopPropagation();
       saveData();
@@ -430,20 +468,17 @@ $(document).ready(function () {
       if (data.combat.hasTurn === index) data.combat.hasTurn = 0;
       else if (data.combat.hasTurn > index) data.combat.hasTurn--;
       data.combat.trackers.splice(index, 1);
-      // remove row directly, then re-render to fix indices
       $(this).closest('.ctr-element').remove();
       renderTracker();
       saveData();
     });
 
-    // turn radio
     $(".tracker-turn").off('click').on('click', function () {
       data.combat.hasTurn = +$(this).val();
       applyTurnClass();
     });
   }
 
-  // ── save: reads current DOM values ────────────────────────────────────
   function saveData() {
     $(".ctr-element").each(function (i) {
       data.combat.trackers[i] = {
@@ -514,17 +549,15 @@ $(document).ready(function () {
   function init() {
     let loadedData;
     try { loadedData = JSON.parse(localStorage.getItem('rpg-data')); } catch(e) {}
-
     const d = loadedData || {
       combat: { turn: 0, hasTurn: 0, trackers: [newTracker(), newTracker(), newTracker()] },
       notes: ''
     };
-
     $('body').append(`
       <div id="ctp-combat" style="position:relative;max-width:725px;min-width:280px;width:-webkit-fill-available;width:-moz-fill-available;">
         <button class="${buttonClasses}" style="${buttonStyle}padding-top:7px;padding-bottom:7px;margin-right:20px;background-color:rgb(44,171,33);display:inline-block;" id="ctb-new">+</button>
         <div style="position:absolute;right:20px;top:7px;">
-          <button id="combat-restart" style="${buttonStyle}margin-right:10px;padding-top:7px;padding-bottom:7px;display:inline-block;background-color:rgb(255,54,51);" class="${buttonClasses}">Reset</button>
+          <button id="combat-restart"  style="${buttonStyle}margin-right:10px;padding-top:7px;padding-bottom:7px;display:inline-block;background-color:rgb(255,54,51);"  class="${buttonClasses}">Reset</button>
           <button id="combat-reset-all" style="${buttonStyle}margin-right:10px;padding-top:7px;padding-bottom:7px;display:inline-block;background-color:rgb(120,30,30);" class="${buttonClasses}">Reset All</button>
           <span style="color:#000000bd;">Turn: <input type="number" style="width:50px;" id="combat-turn" value="${d.combat.turn}" placeholder="Turno"></span>
           <button id="combat-next" style="${buttonStyle}margin-left:10px;padding-top:7px;padding-bottom:7px;display:inline-block;" class="${buttonClasses}">Siguiente</button>
@@ -535,9 +568,8 @@ $(document).ready(function () {
     return d;
   }
 
-  // ── bootstrap ─────────────────────────────────────────────────────────
   renderTracker();
-  initSortable();     // sortable init una sola vez
+  initSortable();
   clickEvents();
   setInterval(saveData, 3000);
 });
